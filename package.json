@@ -1,0 +1,22 @@
+{
+  "name": "server-house-hunter",
+  "version": "0.0.0",
+  "description": "Backend for house hunter website",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": ""
+  },
+  "keywords": [
+    "express",
+    "mongodb"
+  ],
+  "author": "Robiul Hossain",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.2",
+    "express": "^4.18.2",
+    "mongodb": "^6.3.0",
+    "mongoose": "^8.1.0"
+  }
+}
