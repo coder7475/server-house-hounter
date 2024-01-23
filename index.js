@@ -28,18 +28,37 @@ async function main() {
     const { password: myPlaintextPassword } = req.body;
     const hash = bcrypt.hashSync(myPlaintextPassword, 10);
 
+    if (!user.fullName || typeof user.fullName !== 'string') {
+      return res.json({ status: 'error', error: 'Invalid Username!' })
+    }
+    if (!user.role || typeof user.role !== 'string') {
+      return res.json({ status: 'error', error: 'Invalid Role!' })
+    }   
+    if (!myPlaintextPassword || typeof myPlaintextPassword !== 'string') {
+      return res.json({ status: 'error', error: 'Invalid password' })
+    }
+  
+    if (myPlaintextPassword.length < 6) {
+      return res.json({
+        status: 'error',
+        error: 'Password too small. Should be atleast 6 characters'
+      })
+    }
+
     // Store hash in your password DB.
     // if (err) console.log(err);
     // else console.log(hash)
     // console.log(user);
     user["password"] = hash;
-    console.log(user);
+    // console.log(user);
     try {
       const response = await userModel.create(user);
-      console.log("User created successfully", response);
+      // console.log("User created successfully", response);
     } catch (error) {
       console.log(error);
-      return res.json({ status: "error" });
+      if (error.code === 11000)
+        return res.json({ status: "error", error: "User already exits!" });
+      throw error;
     }
 
     res.json({ status: "ok" });
