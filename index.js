@@ -1,9 +1,10 @@
 // modules
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
-const mongoose = require('mongoose');
-const cors = require('cors');
-const userModel = require('./model/user');
+const mongoose = require("mongoose");
+const cors = require("cors");
+const bcrypt = require("bcrypt");
+const userModel = require("./model/user");
 // Declaration
 const app = express();
 const port = process.env.PORT | 3000;
@@ -14,18 +15,25 @@ app.use(express.json());
 app.use(cors());
 
 // connection to mongodb
-main().catch(err => console.log(err));
+main().catch((err) => console.log(err));
 async function main() {
-    // await mongoose.connect('mongodb://127.0.0.1:27017/test');
-  
-    await mongoose.connect(uri);
-    console.log("Conected to MongoDB!")
+  // await mongoose.connect('mongodb://127.0.0.1:27017/test');
 
-    // registration api
-    app.use("/v1/api/register", async(req, res) => {
-      console.log(req.body);
-      res.json({ status: "ok" })
-    })
+  await mongoose.connect(uri);
+  console.log("Conected to MongoDB!");
+
+  // registration api
+  app.use("/v1/api/register", async (req, res) => {
+    console.log(req.body);
+    const { password: myPlaintextPassword } = req.body;
+
+    bcrypt.hash(myPlaintextPassword, 10, function (err, hash) {
+      // Store hash in your password DB.
+      if (err) console.log(err);
+      else console.log(hash);
+    });
+    res.json({ status: "ok" });
+  });
 }
 
 app.get("/", (req, res) => {
@@ -35,4 +43,3 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Phone Hunter app listening on port ${port}`);
 });
-
