@@ -3,10 +3,10 @@ require('dotenv').config();
 const express = require("express");
 const mongoose = require('mongoose');
 const cors = require('cors');
-
+const userModel = require('./model/user');
 // Declaration
 const app = express();
-const port = 3000;
+const port = process.env.PORT | 3000;
 const uri = `mongodb+srv://${process.env.DB_USER_NAME}:${process.env.DB_PASSWORD}@cluster0.xjslrno.mongodb.net/phone-hunter?retryWrites=true&w=majority`;
 
 // middlewares
@@ -22,11 +22,14 @@ async function main() {
     console.log("Conected to MongoDB!")
 
     // registration api
-    
+    app.use("/v1/api/register", async(req, res) => {
+      console.log(req.body);
+      res.json({ status: "ok" })
+    })
 }
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("I am backend for phone hunter!");
 });
 
 app.listen(port, () => {
