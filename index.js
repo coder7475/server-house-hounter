@@ -4,12 +4,13 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
 const userModel = require("./model/user");
 // Declaration
 const app = express();
 const port = process.env.PORT | 3000;
 const uri = `mongodb+srv://${process.env.DB_USER_NAME}:${process.env.DB_PASSWORD}@cluster0.xjslrno.mongodb.net/phone-hunter?retryWrites=true&w=majority`;
-
+const JWT_SECRET = `${process.env.SECRET}`;
 // middlewares
 app.use(express.json());
 app.use(cors());
@@ -28,21 +29,21 @@ async function main() {
     const { password: myPlaintextPassword } = req.body;
     const hash = bcrypt.hashSync(myPlaintextPassword, 10);
 
-    if (!user.fullName || typeof user.fullName !== 'string') {
-      return res.json({ status: 'error', error: 'Invalid Username!' })
+    if (!user.fullName || typeof user.fullName !== "string") {
+      return res.json({ status: "error", error: "Invalid Username!" });
     }
-    if (!user.role || typeof user.role !== 'string') {
-      return res.json({ status: 'error', error: 'Invalid Role!' })
-    }   
-    if (!myPlaintextPassword || typeof myPlaintextPassword !== 'string') {
-      return res.json({ status: 'error', error: 'Invalid password' })
+    if (!user.role || typeof user.role !== "string") {
+      return res.json({ status: "error", error: "Invalid Role!" });
     }
-  
+    if (!myPlaintextPassword || typeof myPlaintextPassword !== "string") {
+      return res.json({ status: "error", error: "Invalid password" });
+    }
+
     if (myPlaintextPassword.length < 6) {
       return res.json({
-        status: 'error',
-        error: 'Password too small. Should be atleast 6 characters'
-      })
+        status: "error",
+        error: "Password too small. Should be atleast 6 characters",
+      });
     }
 
     // Store hash in your password DB.
@@ -62,6 +63,30 @@ async function main() {
     }
 
     res.json({ status: "ok" });
+  });
+
+  // login
+  app.post("/v1/api/login", async (req, res) => {
+    const { email, password } = req.body;
+    const user = await userModel.findOne({ email }).lean();
+    console.log(user);
+    if (!user)
+      return res.json({ status: "error", error: "Invalid email/password" });
+
+    if (await bcrypt.compare(password, user.password)) {
+      // the username, password combination is successful
+      const token = jwt.sign(
+        {
+          id: user._id,
+          email: user.email,
+        },
+        JWT_SECRET
+      );
+      console.log(token);
+      return res.json({ status: "ok", data: token });
+    }
+
+    res.json({ status: "error", error: "Invalid username/password" });
   });
 }
 
