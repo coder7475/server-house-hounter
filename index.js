@@ -26,21 +26,22 @@ async function main() {
   app.use("/v1/api/register", async (req, res) => {
     const user = req.body;
     const { password: myPlaintextPassword } = req.body;
-    let hashedPassword;
-    bcrypt.hash(myPlaintextPassword, 10, async (err, hash) => {
-      // Store hash in your password DB.
-      // if (err) console.log(err);
-      // else console.log(hash)
-      // console.log(user);
-      user["password"] = hash;
-      console.log(user);
-      try {
-        const response = await userModel.create(user);
-        console.log(response);
-      } catch (error) {
-        console.log(error);
-      }
-    });
+    const hash = bcrypt.hashSync(myPlaintextPassword, 10);
+
+    // Store hash in your password DB.
+    // if (err) console.log(err);
+    // else console.log(hash)
+    // console.log(user);
+    user["password"] = hash;
+    console.log(user);
+    try {
+      const response = await userModel.create(user);
+      console.log("User created successfully", response);
+    } catch (error) {
+      console.log(error);
+      return res.json({ status: "error" });
+    }
+
     res.json({ status: "ok" });
   });
 }
