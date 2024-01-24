@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 // const cors = require("cors");
 // const bcrypt = require("bcrypt");
 // const jwt = require('jsonwebtoken');
-// const userModel = require("./model/user");
+const userModel = require("./model/user");
 // Declaration
 const app = express();
 const port = process.env.PORT || 5000;
