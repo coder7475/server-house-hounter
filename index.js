@@ -97,3 +97,5 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Phone Hunter app listening on port ${port}`);
 });
+
+module.exports = app;
