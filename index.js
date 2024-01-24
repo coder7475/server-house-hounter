@@ -89,11 +89,15 @@ const port = process.env.PORT || 5000;
 //     res.json({ status: "error", error: "Invalid username/password" });
 //   });
 // }
+app.listen(port, () => {
+  console.log(`Phone Hunter app listening on port ${port}`);
+});
 
 app.get("/", (req, res) => {
   res.send("I am backend for phone hunter!");
 });
 
-app.listen(port, () => {
-  console.log(`Phone Hunter app listening on port ${port}`);
-});
+
+
+// Export the Express API
+module.exports = app
